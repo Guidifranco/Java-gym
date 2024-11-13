@@ -53,7 +53,7 @@ public class RegistroBD {
             DNI.iniciarSesion(dni);
             return true;
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Inserte correctamente la fecha de naciemiento año-mes-dia");
+            JOptionPane.showMessageDialog(null, "Inserte correctamente la fecha de naciemiento. Debe ser AAAA-MM-DD");
             System.out.println("Error al registrar cliente: " + e.getMessage());
             return false;
         }
