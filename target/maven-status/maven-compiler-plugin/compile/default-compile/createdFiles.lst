@@ -1,6 +1,12 @@
+baseDatos\ConexionBD.class
+baseDatos\RegistroBD.class
+clases\InicioSesion.class
 clases\Menu.class
 clases\Clases.class
 clases\MetodoPago.class
 clases\Membresias.class
 clases\Registro.class
-clases\InicioSesion.class
+baseDatos\ClaseBD.class
+baseDatos\MetodoPagoBD.class
+baseDatos\DNI.class
+baseDatos\InicioBD.class

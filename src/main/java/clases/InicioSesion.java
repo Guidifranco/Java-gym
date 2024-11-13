@@ -1,5 +1,7 @@
 package clases;
 
+import baseDatos.InicioBD;
+import baseDatos.DNI;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Font;
@@ -10,6 +12,7 @@ public class InicioSesion extends JFrame implements ActionListener {
     private JLabel ingreso, dni, email, consulta, label_imagen;
     private JTextField field_dni, field_email;
     private JButton ingresar, boton_consulta;
+    private InicioBD inicioBD;
 
     //Constructor
     public InicioSesion() {
@@ -62,26 +65,37 @@ public class InicioSesion extends JFrame implements ActionListener {
         boton_consulta.addActionListener(this);
         add(boton_consulta);
 
+        inicioBD = new InicioBD();
     }
-    //Funcionalidad
 
+    //Funcionalidad
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
             if (e.getSource() == ingresar) {
                 if (field_email.getText().isEmpty() || field_dni.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Debe completar los campos para iniciar sesióm", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Debe completar los campos para iniciar sesión", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Sesión iniciada correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    String dni = field_dni.getText();
+                    String email = field_email.getText();
 
-                    //Traslado hacia el menú 
-                    Menu interfaz = new Menu();
-                    interfaz.setBounds(0, 0, 950, 725);
-                    interfaz.setVisible(true);
-                    interfaz.setResizable(false);
-                    interfaz.setLocationRelativeTo(null);
+                    // Verificar DNI y email con la base de datos
+                    if (inicioBD.verificarCampos(dni, email)) {
+                        DNI.iniciarSesion(dni);  // Guardamos el DNI
 
-                    this.setVisible(false);
+                        JOptionPane.showMessageDialog(null, "Sesión iniciada correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+                        // Traslado hacia el menú
+                        Menu interfaz = new Menu();
+                        interfaz.setBounds(0, 0, 950, 725);
+                        interfaz.setVisible(true);
+                        interfaz.setResizable(false);
+                        interfaz.setLocationRelativeTo(null);
+
+                        this.setVisible(false);
+                    } else {
+                        // Mensaje de error ya escrito en InicioBD.verificarCampos
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -101,10 +115,9 @@ public class InicioSesion extends JFrame implements ActionListener {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "No es posible acceder a la interfaz, problema de ruta");
         }
-
     }
-    //Main
 
+    //Main
     public static void main(String args[]) {
         InicioSesion interfaz = new InicioSesion();
         interfaz.setBounds(0, 0, 400, 535);
@@ -112,5 +125,4 @@ public class InicioSesion extends JFrame implements ActionListener {
         interfaz.setResizable(false);
         interfaz.setLocationRelativeTo(null);
     }
-
 }

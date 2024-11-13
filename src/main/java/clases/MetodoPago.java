@@ -1,8 +1,10 @@
 package clases;
 
+import baseDatos.MetodoPagoBD; 
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Font;
+import java.util.regex.Pattern;
 
 public class MetodoPago extends JFrame implements ActionListener {
     //Declaración de variables
@@ -10,11 +12,13 @@ public class MetodoPago extends JFrame implements ActionListener {
     private JLabel titulo, nombre, fechaVencimiento, numeroTarjeta, codigoSeguridad, monto;
     private JTextField field_nombre, field_vencimiento, field_num_tarjeta, field_codigo, field_monto;
     private JButton pagar;
+    private MetodoPagoBD metodoPagoBD;
 
     //Constructor
     public MetodoPago() {
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
 
         Font fuente_titulo = new Font("Arial", Font.BOLD, 32);
         Font fuente_default = new Font("Arial", Font.PLAIN, 14);
@@ -67,40 +71,64 @@ public class MetodoPago extends JFrame implements ActionListener {
 
         field_monto = new JTextField();
         field_monto.setBounds(400, 460, 150, 25);
+        field_monto.setText("40.000$");
+        field_monto.setEditable(false);
+        field_monto.setHorizontalAlignment(JTextField.CENTER);
         add(field_monto);
 
         pagar = new JButton("Pagar");
         pagar.setBounds(580, 460, 100, 25);
         pagar.addActionListener(this);
         add(pagar);
+        
+        metodoPagoBD = new MetodoPagoBD();
 
+    }
+    
+    private boolean validarFecha(String fecha) {
+        // Valida el formato AAAA-MM-DD
+        String regex = "\\d{4}-\\d{2}-\\d{2}";
+        return Pattern.matches(regex, fecha);
     }
 
     //Funcionalidad
     @Override
     public void actionPerformed(ActionEvent e) {
-        try {
-            if (e.getSource() == pagar) {
-                if (field_nombre.getText().isEmpty() || field_vencimiento.getText().isEmpty()
-                        || field_num_tarjeta.getText().isEmpty() || field_codigo.getText().isEmpty()
-                        || field_monto.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Debes completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Pago confirmado", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                    Menu interfaz = new Menu();
-                    interfaz.setBounds(0, 0, 950, 725);
-                    interfaz.setVisible(true);
-                    interfaz.setResizable(false);
-                    interfaz.setLocationRelativeTo(null);
-
-                    this.setVisible(false);
-                }
+        if (e.getSource() == pagar) {
+            if (field_nombre.getText().isEmpty() || field_vencimiento.getText().isEmpty()
+                    || field_num_tarjeta.getText().isEmpty() || field_codigo.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Debes completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
+                return; // Detenemos aquí si hay campos vacíos
             }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "No es posible acceder a la interfaz, problema de ruta");
-        }
 
+            // Validar la fecha de vencimiento
+            String vencimiento = field_vencimiento.getText();
+            if (!validarFecha(vencimiento)) {
+                JOptionPane.showMessageDialog(null, "Formato de fecha de vencimiento incorrecto. Debe ser AAAA-MM-DD.", "Error", JOptionPane.ERROR_MESSAGE);
+                return; // Detenemos aquí si la fecha es inválida
+            }
+
+            // Si pasamos las validaciones de la fecha, seguimos con el proceso
+            try {
+                String nombreTitular = field_nombre.getText();
+                String numeroTarjeta = field_num_tarjeta.getText();
+                String codigoSeguridad = field_codigo.getText();
+                double monto = 40000;
+
+                metodoPagoBD.insertarMetodoPago(nombreTitular, vencimiento, numeroTarjeta, codigoSeguridad, monto);
+
+                //abre el menú principal
+                Menu interfaz = new Menu();
+                interfaz.setBounds(0, 0, 950, 725);
+                interfaz.setVisible(true);
+                interfaz.setResizable(false);
+                interfaz.setLocationRelativeTo(null);
+
+                this.setVisible(false);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "No es posible acceder a la interfaz, problema de ruta");
+            }
+        }   
     }
 
     //Main

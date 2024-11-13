@@ -1,5 +1,6 @@
 package clases;
 
+import baseDatos.ClaseBD;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Font;
@@ -14,6 +15,7 @@ public class Clases extends JFrame implements ActionListener {
             horario_mi4, horario_mi5, horario_mi6, horario_j1, horario_j2, horario_j3, horario_j4,
             horario_j5, horario_j6, horario_v1, horario_v2, horario_v3, horario_v4, horario_v5, horario_v6,
             horario_s1, horario_s2, horario_s3, horario_s4, horario_s5, horario_s6;
+    private ClaseBD claseBD;
 
 //Constructor
     public Clases() {
@@ -44,13 +46,11 @@ public class Clases extends JFrame implements ActionListener {
         boton_contacto.addActionListener(this);
         add(boton_contacto);
 
-        //Boton para reservar
         boton_reserva = new JButton("Reservar");
         boton_reserva.setBounds(790, 600, 90, 30);
         boton_reserva.addActionListener(this);
         add(boton_reserva);
 
-        // Título
         titulo = new JLabel("Selecciona tu clase");
         titulo.setBounds(300, 110, 350, 50);
         titulo.setFont(fuente_titulo);
@@ -272,12 +272,12 @@ public class Clases extends JFrame implements ActionListener {
         horario_s6.addActionListener(this);
         add(horario_s6);
 
+        claseBD = new ClaseBD();
     }
     //Funcionalidad
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //Inicio
         try {
             if (e.getSource() == boton_inicio) {
                 Menu interfaz = new Menu();
@@ -315,24 +315,6 @@ public class Clases extends JFrame implements ActionListener {
         //Contacto
         if (e.getSource() == boton_contacto) {
             JOptionPane.showMessageDialog(null, "Estamos trabajando en ello", "Información", JOptionPane.INFORMATION_MESSAGE);
-        }
-
-        //Reserva
-        if (e.getSource() == boton_reserva) {
-            int respuesta = JOptionPane.showConfirmDialog(null, "¿Desea reservar la clase?", "Confirmación", JOptionPane.YES_NO_OPTION);
-
-            if (respuesta == JOptionPane.YES_OPTION) {
-                JOptionPane.showMessageDialog(null, "Clase reservada");
-                Menu interfaz = new Menu();
-                interfaz.setBounds(0, 0, 950, 725);
-                interfaz.setVisible(true);
-                interfaz.setResizable(false);
-                interfaz.setLocationRelativeTo(null);
-
-                this.setVisible(false);
-
-            }
-
         }
 
         //DIAS DE CLASES
@@ -570,6 +552,55 @@ public class Clases extends JFrame implements ActionListener {
                 horario_s6.setBackground(java.awt.Color.GREEN);
             }
         }
+
+if (e.getSource() == boton_reserva) {
+   
+        // array con todos los horarios disponibles
+        Object[] horariosDisponibles = {horario_l1, horario_l2, horario_l3, horario_l4, horario_l5, horario_l6,
+            horario_ma1, horario_ma2, horario_ma3, horario_ma4, horario_ma5, horario_ma6,
+            horario_mi1, horario_mi2, horario_mi3, horario_mi4, horario_mi5, horario_mi6,
+            horario_j1, horario_j2, horario_j3, horario_j4, horario_j5, horario_j6,
+            horario_v1, horario_v2, horario_v3, horario_v4, horario_v5, horario_v6,
+            horario_s1, horario_s2, horario_s3, horario_s4, horario_s5, horario_s6};
+
+        boolean claseSeleccionada = false;
+
+        // Recorremos los horarios para verificar cuál fue el que se seleccionó
+        for (Object horario : horariosDisponibles) {
+
+            // Verificar si el horario tiene el color verde de fondo
+            if (horario instanceof JButton) {
+                JButton btnHorario = (JButton) horario;
+                if (btnHorario.getBackground().equals(java.awt.Color.GREEN)) {
+                    claseSeleccionada = true;
+                    break;
+                }
+            }
+        }
+
+        // Si se seleccionó alguna clase
+        if (claseSeleccionada) {
+            try {
+                //llamamos a claseBD para registrar la reserva 
+                claseBD.registrarReservaClase();
+                
+                this.setVisible(false); 
+
+                Menu interfaz = new Menu();
+                interfaz.setBounds(0, 0, 950, 725);
+                interfaz.setVisible(true);
+                interfaz.setResizable(false);
+                interfaz.setLocationRelativeTo(null);
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al realizar la reserva: " + ex.getMessage());
+            }
+        } else {
+            // Si no se seleccionó ninguna clase
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un horario para realizar la reserva.");
+        }
+    }
+
 
     }
 

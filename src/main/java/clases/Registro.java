@@ -1,5 +1,6 @@
 package clases;
 
+import baseDatos.RegistroBD;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Font;
@@ -7,9 +8,10 @@ import java.awt.Font;
 public class Registro extends JFrame implements ActionListener {
 
     //Declaración de variables
-    private JLabel registro, nombre, apellido, direccion, dni, fecha_nacimiento, email, consulta, label_imagen;
+    private JLabel registro, nombre, apellido, direccion, dni, fechaNacimiento, email, consulta, label_imagen;
     private JButton registrar, ingresar;
-    private JTextField field_nombre, field_apellido, field_dni, field_direccion, field_fecha, field_email;
+    private JTextField field_nombre, field_apellido, field_dni, field_direccion, field_fechaNacimiento, field_email;
+    private RegistroBD registroBD;
 
     //Constructor
     public Registro() {
@@ -54,10 +56,10 @@ public class Registro extends JFrame implements ActionListener {
         dni.setFont(fuente_default);
         add(dni);
 
-        fecha_nacimiento = new JLabel("Fecha de nacimiento");
-        fecha_nacimiento.setBounds(225, 165, 150, 25);
-        fecha_nacimiento.setFont(fuente_default);
-        add(fecha_nacimiento);
+        fechaNacimiento = new JLabel("Fecha de nacimiento");
+        fechaNacimiento.setBounds(225, 165, 150, 25);
+        fechaNacimiento.setFont(fuente_default);
+        add(fechaNacimiento);
 
         consulta = new JLabel("Ya estas registrado?");
         consulta.setBounds(135, 390, 200, 25);
@@ -90,13 +92,16 @@ public class Registro extends JFrame implements ActionListener {
         field_direccion.setBounds(225, 125, 150, 25);
         add(field_direccion);
 
-        field_fecha = new JTextField();
-        field_fecha.setBounds(225, 195, 150, 25);
-        add(field_fecha);
+        field_fechaNacimiento = new JTextField();
+        field_fechaNacimiento.setBounds(225, 195, 150, 25);
+        add(field_fechaNacimiento);
 
         field_email = new JTextField();
         field_email.setBounds(225, 265, 150, 25);
         add(field_email);
+        
+        // Instancia de RegistroBD para acceder a la base de datos
+        registroBD = new RegistroBD();
 
     }
 
@@ -108,15 +113,24 @@ public class Registro extends JFrame implements ActionListener {
 
                 // Si algún campo está vacío, mostramos el mensaje de error
                 if (field_nombre.getText().isEmpty() || field_apellido.getText().isEmpty() || field_dni.getText().isEmpty()
-                        || field_direccion.getText().isEmpty() || field_fecha.getText().isEmpty() || field_email.getText().isEmpty()) {
+                    || field_direccion.getText().isEmpty() || field_fechaNacimiento.getText().isEmpty() || field_email.getText().isEmpty()) {
 
-                    JOptionPane.showMessageDialog(null, "Debes completar todos los campos para registrarte", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Debes completar todos los campos para registrarte", "Error", JOptionPane.ERROR_MESSAGE);
 
-                } else {
-                    // Si todos los campos están completos, registramos el usuario
-                    JOptionPane.showMessageDialog(null, "Registro exitoso!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Llamamos al método registrarCliente
+                boolean resultado = registroBD.registrarCliente(
+                    field_dni.getText(),
+                    field_nombre.getText(),
+                    field_apellido.getText(),
+                    field_fechaNacimiento.getText(),
+                    field_direccion.getText(),
+                    field_email.getText()
+                );
 
-                    //traslado hacia el menú
+                if (resultado) {
+                    
+                    // Traslado hacia el menú
                     Menu interfaz = new Menu();
                     interfaz.setBounds(0, 0, 950, 725);
                     interfaz.setVisible(true);
@@ -124,11 +138,14 @@ public class Registro extends JFrame implements ActionListener {
                     interfaz.setLocationRelativeTo(null);
 
                     this.setVisible(false);
+                } else {
+                    
                 }
             }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "No es posible acceder a la interfaz, problema de ruta");
         }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(null, "No es posible acceder a la interfaz, problema de ruta");
+    }
 
         //Boton de inicio de sesión
         try {

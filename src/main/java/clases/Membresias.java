@@ -1,5 +1,6 @@
 package clases;
 
+import baseDatos.MetodoPagoBD; 
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Font;
@@ -10,6 +11,7 @@ public class Membresias extends JFrame implements ActionListener {
     private JLabel titulo, gym3, gym_libre, funcional;
     private JButton boton_home, boton_clases, boton_historial, boton_contacto, boton_gym3, boton_gym_libre, boton_funcional;
     private JTextArea area_gym3, area_gym_libre, area_funcional;
+    
 
     //Constructor
     public Membresias() {
@@ -67,7 +69,7 @@ public class Membresias extends JFrame implements ActionListener {
 
         // Segunda tarjeta
         gym_libre = new JLabel("Gimnasio libre todos los días.");
-        gym_libre.setBounds(335, 220, 300, 30); // Columna 2
+        gym_libre.setBounds(335, 220, 300, 30); 
         gym_libre.setFont(fuente_subtitulo);
         add(gym_libre);
 
@@ -75,7 +77,7 @@ public class Membresias extends JFrame implements ActionListener {
                 + " a rutinas personalizadas por nuestros entrenadores");
         area_gym_libre.setBounds(370, 260, 200, 250);
         area_gym_libre.setFont(fuente_default);
-        area_gym_libre.setLineWrap(true); //saltos de linea
+        area_gym_libre.setLineWrap(true); 
         area_gym_libre.setWrapStyleWord(true); //que no corte las palabras
         area_gym_libre.setEditable(false);
         add(area_gym_libre);
@@ -87,7 +89,7 @@ public class Membresias extends JFrame implements ActionListener {
 
         // Tercera tarjeta
         funcional = new JLabel("Funcional");
-        funcional.setBounds(740, 220, 300, 30); // Columna 3
+        funcional.setBounds(740, 220, 300, 30); 
         funcional.setFont(fuente_subtitulo);
         add(funcional);
 
@@ -104,7 +106,7 @@ public class Membresias extends JFrame implements ActionListener {
         boton_funcional.setBounds(760, 530, 100, 30);
         boton_funcional.addActionListener(this);
         add(boton_funcional);
-
+   
     }
     //Funcionalidad
 
@@ -150,20 +152,18 @@ public class Membresias extends JFrame implements ActionListener {
         if (e.getSource() == boton_contacto) {
             JOptionPane.showMessageDialog(null, "Estamos trabajando en ello", "Información", JOptionPane.INFORMATION_MESSAGE);
         }
-        //Elegir método de pago
-        try {
-            if (e.getSource() == boton_gym3 || e.getSource() == boton_gym_libre || e.getSource() == boton_funcional) {
-                MetodoPago interfaz = new MetodoPago();
-                interfaz.setBounds(0, 0, 950, 725);
-                interfaz.setVisible(true);
-                interfaz.setResizable(false);
-                interfaz.setLocationRelativeTo(null);
 
-                this.setVisible(false);
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "No es posible acceder a la interfaz, problema de ruta");
+        if(e.getSource() == boton_gym3 || e.getSource() == boton_funcional || e.getSource() == boton_gym_libre ){ 
+            
+            MetodoPago interfaz = new MetodoPago();
+            interfaz.setBounds(0, 0, 950, 725);
+            interfaz.setVisible(true);
+            interfaz.setResizable(false);
+            interfaz.setLocationRelativeTo(null);
+
+            this.setVisible(false);
         }
+       
 
     }
 
